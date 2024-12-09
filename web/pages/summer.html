@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventory tracker</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Roboto+Mono:ital,wght@0,100..700;1,100..700&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/main.css">
+
+    <script type="text/javascript" src="/eel.js"></script>
+
+</head>
+<body>
+
+    <div class="d-flex flex-row">
+        <div class="d-flex flex-column flex-shrink-0 p-3 text-bg-dark vh-100 position-fixed" style="width: 280px; ">
+            <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
+              <svg class="bi pe-none me-2" width="40" height="32"><use xlink:href="#bootstrap"></use></svg>
+              <span class="fs-4">Inventory <br>tracker</span>
+            </a>
+            <hr>
+            <ul class="nav nav-pills flex-column mb-auto">
+              <li class="nav-item">
+                <a href="../main.html" class="nav-link text-white">
+                  <svg class="bi pe-none me-2" width="16" height="16"><use xlink:href="#home"></use></svg>
+                  Home
+                </a>
+              </li>
+              <li>
+                <a href="../pages/winter.html" class="nav-link text-white">
+                  <svg class="bi pe-none me-2" width="16" height="16"><use xlink:href="#speedometer2"></use></svg>
+                  Winter's Collection
+                </a>
+              </li>
+              <li>
+                <a href="../pages/summer.html" class="nav-link active">
+                  <svg class="bi pe-none me-2" width="16" height="16"><use xlink:href="#table"></use></svg>
+                  Summer's Collection
+                </a>
+              </li>
+              <li>
+                <a href="../pages/bill_generator.html" class="nav-link text-white">
+                  <svg class="bi pe-none me-2" width="16" height="16"><use xlink:href="#people-circle"></use></svg>
+                  Bill Generator
+                </a>
+              </li>
+            </ul>
+            <hr>
+        </div>
+
+        <div class="collection margin-left row">
+            <div class="new-record">
+                <form class="new-record-form" id="new-record-form" data-collection = 'summer'>
+                    <div class="row">
+                        <h1>Manage stock</h1>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <select name="summerCollection" id="summerCollection" class="form-control">
+                                <option value="" selected>None selected</option>
+                                <option value="fabric-soft-cotton">Fabric soft cotton</option>
+                                <option value="cutting-charges">Cutting charges</option>
+                                <option value="embroidery">Embroidery</option>
+                                <option value="stiching">Stiching</option>
+                                <option value="bukram">Bukram</option>
+                                <option value="overlock">Overlock</option>
+                                <option value="button">Button</option>
+                                <option value="thread">Thread</option>
+                                <option value="ress-labour">Ress labour</option>
+                                <option value="kollar-patti-gatta">Kollar patti + gatta</option>
+                                <option value="clips">Clips</option>
+                                <option value="packing-bags">Packing bags</option>
+                                <option value="shalwar-stiching">Shalwar stiching</option>
+                              </select>
+                        </div>
+                        <div class="col">
+                          <input type="text" placeholder="Stock outflow.." class="form-control" name="stock-outflow">
+                        </div>
+                        <div class="col">
+                          <input type="text" placeholder="Stock inflow.." class="form-control" name="stock-inflow">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <input type="submit" value="submit" class="btn btn-primary mt-3">
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <div class="summer-collection" id="summer-collection">
+                <div class="row">
+                    <h1>Summer's collection</h1>
+                </div>
+                <div class="row">
+                    <!-- Clickable container -->
+                    <a href="#" class="d-flex justify-content-between align-items-center p-3 border rounded text-decoration-none text-dark product-link" style="cursor: pointer; background-color: lightgray; width: 100%; padding: 20px; min-width: 700px;" data-product-id = "fabric-soft-cotton">
+                      <span>Fabric soft cotton</span>
+                      <span class="text-dark">View More</span>
+                    </a>
+                </div>
+
+                <div class="row">
+                    <!-- Clickable container -->
+                    <a href="#" class="d-flex justify-content-between align-items-center p-3 border rounded text-decoration-none text-dark product-link" style="cursor: pointer; background-color: lightgray; width: 100%; padding: 20px; min-width: 700px;" data-product-id="cutting-charges">
+                      <span>Cutting charges</span>
+                      <span class="text-dark">View More</span>
+                    </a>
+                </div>
+
+                <div class="row">
+                    <!-- Clickable container -->
+                    <a href="#" class="d-flex justify-content-between align-items-center p-3 border rounded text-decoration-none text-dark product-link" style="cursor: pointer; background-color: lightgray; width: 100%; padding: 20px; min-width: 700px;" data-product-id="embroidery">
+                      <span>Embroidery</span>
+                      <span class="text-dark">View More</span>
+                    </a>
+                </div>
+
+                <div class="row">
+                    <!-- Clickable container -->
+                    <a href="#" class="d-flex justify-content-between align-items-center p-3 border rounded text-decoration-none text-dark product-link" style="cursor: pointer; background-color: lightgray; width: 100%; padding: 20px; min-width: 700px;" data-product-id="stiching">
+                      <span>Stiching</span>
+                      <span class="text-dark">View More</span>
+                    </a>
+                </div>
+
+                <div class="row">
+                    <!-- Clickable container -->
+                    <a href="#" class="d-flex justify-content-between align-items-center p-3 border rounded text-decoration-none text-dark product-link" style="cursor: pointer; background-color: lightgray; width: 100%; padding: 20px; min-width: 700px;" data-product-id="bukram">
+                      <span>Bukram</span>
+                      <span class="text-dark">View More</span>
+                    </a>
+                </div>
+
+                <div class="row">
+                    <!-- Clickable container -->
+                    <a href="#" class="d-flex justify-content-between align-items-center p-3 border rounded text-decoration-none text-dark product-link" style="cursor: pointer; background-color: lightgray; width: 100%; padding: 20px; min-width: 700px;" data-product-id="overlock">
+                      <span>Overlock</span>
+                      <span class="text-dark">View More</span>
+                    </a>
+                </div>
+
+                <div class="row">
+                    <!-- Clickable container -->
+                    <a href="#" class="d-flex justify-content-between align-items-center p-3 border rounded text-decoration-none text-dark product-link" style="cursor: pointer; background-color: lightgray; width: 100%; padding: 20px; min-width: 700px;" data-product-id="button">
+                      <span>Button</span>
+                      <span class="text-dark">View More</span>
+                    </a>
+                </div>
+
+                <div class="row">
+                    <!-- Clickable container -->
+                    <a href="#" class="d-flex justify-content-between align-items-center p-3 border rounded text-decoration-none text-dark product-link" style="cursor: pointer; background-color: lightgray; width: 100%; padding: 20px; min-width: 700px;" data-product-id="thread">
+                      <span>Thread</span>
+                      <span class="text-dark">View More</span>
+                    </a>
+                </div>
+
+                <div class="row">
+                    <!-- Clickable container -->
+                    <a href="#" class="d-flex justify-content-between align-items-center p-3 border rounded text-decoration-none text-dark product-link" style="cursor: pointer; background-color: lightgray; width: 100%; padding: 20px; min-width: 700px;" data-product-id="ress-labour">
+                      <span>Ress labour</span>
+                      <span class="text-dark">View More</span>
+                    </a>
+                </div>
+
+                <div class="row">
+                    <!-- Clickable container -->
+                    <a href="#" class="d-flex justify-content-between align-items-center p-3 border rounded text-decoration-none text-dark product-link" style="cursor: pointer; background-color: lightgray; width: 100%; padding: 20px; min-width: 700px;" data-product-id="kollar-patti-gatta">
+                      <span>kollar-patti-gatta</span>
+                      <span class="text-dark">View More</span>
+                    </a>
+                </div>
+
+                <div class="row">
+                    <!-- Clickable container -->
+                    <a href="#" class="d-flex justify-content-between align-items-center p-3 border rounded text-decoration-none text-dark product-link" style="cursor: pointer; background-color: lightgray; width: 100%; padding: 20px; min-width: 700px;" data-product-id="clips">
+                      <span>Clips</span>
+                      <span class="text-dark">View More</span>
+                    </a>
+                </div>
+
+                <div class="row">
+                    <!-- Clickable container -->
+                    <a href="#" class="d-flex justify-content-between align-items-center p-3 border rounded text-decoration-none text-dark product-link" style="cursor: pointer; background-color: lightgray; width: 100%; padding: 20px; min-width: 700px;" data-product-id="packing-bags">
+                      <span>Packing bags</span>
+                      <span class="text-dark">View More</span>
+                    </a>
+                </div>
+
+                <div class="row">
+                    <!-- Clickable container -->
+                    <a href="#" class="d-flex justify-content-between align-items-center p-3 border rounded text-decoration-none text-dark product-link" style="cursor: pointer; background-color: lightgray; width: 100%; padding: 20px; min-width: 700px;" data-product-id="shalwar-stiching">
+                      <span>Shalwar stiching</span>
+                      <span class="text-dark">View More</span>
+                    </a>
+                </div>
+
+            </div>
+
+            <div class="row mt-3">
+                
+            </div>
+
+
+
+            <div class="row mb-4" id="show-table">
+              <table class="table table-striped table-light" style="text-align: center;">
+                <thead>
+                  <tr>
+                    <th scope="col">Date</th>
+                    <th scope="col">Stock inflow</th>
+                    <th scope="col">Stock outflow</th>
+                    <th scope="col">Remaining stock</th>
+                  </tr>
+                </thead>
+                <tbody id="tableBody">
+                  <!-- Rows will be dynamically added here -->
+                </tbody>
+              </table>
+              
+            </div>
+
+        </div>
+
+        
+        
+    </div>
+  
+    <script src="../js/main.js"></script>
+
+    
+</body>
+</html>

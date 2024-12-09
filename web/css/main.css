@@ -1,0 +1,103 @@
+
+body {
+    min-width: 1000px;
+}
+
+.flex-container {
+    display: flex;
+}
+
+.flex-container nav {
+    /* width: 200px; */
+    height: 100vh;
+    background-color: #100d10;
+    position:fixed;
+    padding: 2vw 0;
+    top: 0;
+    left: 0;
+}
+
+
+
+ul {
+    padding: 0;
+    width: 100%;
+}
+
+
+
+.flex-container li {
+    list-style-type: none;
+    list-style: none;
+    line-height: 3em;
+}
+
+nav h1 {
+    color: white;
+    margin-bottom: 2rem;
+}
+
+.flex-container a {
+    text-decoration: none;
+    color: white;
+    display: block;
+    width: 100%;
+    padding: 1vh 0;
+    font-size: 1.3rem;
+}
+
+.search-section {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.search-section form {
+    margin-top: 10em;
+}
+
+.search-bar {
+    margin-top: 1rem;
+    text-align: center;
+    width: 50vw;
+    padding: 1vh 0;
+    border: 1px solid black;
+    border-radius: 30px;
+}
+
+.collection {
+    display: flex;
+    flex: 1;
+    padding: 0 10rem;
+}
+
+.collection h1 {
+    margin-top: 5rem;
+}
+
+.new-record {
+    min-height: 300px;
+    padding: 20px;
+    padding-top: 0px;
+    border-radius: 20px;
+    background-color: lightgray;
+    margin-top: 30px;
+    min-width: 700px;
+}
+
+.margin-left {
+    margin-left: 13em;
+}
+
+.add-btn {
+    background-color: lightgreen;
+    padding: 5px;
+    border-radius: 10px;
+    border: none;
+}
+
+#show-table {
+    display: none;
+}
