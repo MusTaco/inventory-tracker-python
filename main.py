@@ -37,7 +37,16 @@ CREATE TABLE IF NOT EXISTS winter_stock (
     remaining_stock INTEGER
 )
 """
-
+create_summer_table = """
+CREATE TABLE IF NOT EXISTS summer_stock (
+    product_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    product_desc TEXT NOT NULL,
+    date TEXT NOT NULL,
+    stock_inflow INTEGER DEFAULT 0,
+    stock_outflow INTEGER DEFAULT 0,
+    remaining_stock INTEGER
+)
+"""
 
 @eel.expose  # Expose this function to be callable from JavaScript
 def create_bill(formData):
@@ -139,11 +148,14 @@ def create_bill(formData):
 
 
 @eel.expose
-def add_new_product_record(formData):
+def add_new_product_record(formData, season):
     today = date.today()
 
-    select_query = f"SELECT * FROM winter_stock WHERE product_desc = '{formData['winterCollection']}'"
-    previous_data = db.fetch_data(select_query, 1)
+    collection = 'winterCollection' if season == 'winter_stock' else 'summerCollection'
+    create_table = create_winter_table if season == 'winter_stock' else create_summer_table
+
+    select_query = f"SELECT * FROM {season} WHERE product_desc = ?"
+    previous_data = db.fetch_data(select_query, (formData[collection],), 1)
     print(previous_data)
     if len(previous_data) > 0:
         remaining_stock = previous_data[-1][-1] + int(formData['stock-inflow']) - int(formData['stock-outflow'])
@@ -152,23 +164,23 @@ def add_new_product_record(formData):
         remaining_stock = int(formData['stock-inflow']) - int(formData['stock-outflow'])
     print(remaining_stock)
 
-    insert_query = "INSERT INTO winter_stock (product_desc, date, stock_inflow, stock_outflow, remaining_stock) VALUES (?, ?, ?, ?, ?)"
-    invoice_number = db.insert_data('winter_stock', create_winter_table, insert_query, (formData['winterCollection'], today, formData['stock-inflow'], formData['stock-outflow'], remaining_stock))
+    insert_query = f"INSERT INTO {season} (product_desc, date, stock_inflow, stock_outflow, remaining_stock) VALUES (?, ?, ?, ?, ?)"
+    invoice_number = db.insert_data(f'{season}', create_table, insert_query, (formData[collection], today, formData['stock-inflow'], formData['stock-outflow'], remaining_stock))
 
 
 
 
 @eel.expose
-def get_product_records(product_desc):
+def get_product_records(product_desc, season):
     print(product_desc)
     try:
         select_query = f"""
         SELECT date, stock_inflow, stock_outflow, remaining_stock
-        FROM winter_stock
-        WHERE product_desc = '{product_desc}'
+        FROM {season}
+        WHERE product_desc = ?
         ORDER BY product_id DESC;
         """
-        results = db.fetch_data(select_query)
+        results = db.fetch_data(select_query, (product_desc,))
         print(results)
         return results
 
@@ -184,9 +196,9 @@ def get_client_record(telephone):
         select_query = f"""
         SELECT bill_number, created_at, bill_path
         FROM client_history
-        WHERE bill_number = '{telephone}'
+        WHERE bill_number = ?
         """
-        results = db.fetch_data(select_query)
+        results = db.fetch_data(select_query, (telephone,))
         print(results)
         return results
 

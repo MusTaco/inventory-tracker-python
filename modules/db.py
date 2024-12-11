@@ -22,10 +22,10 @@ class Database:
         except sqlite3.Error as e:
             print(f"Error inserting data: {e}")
 
-    def fetch_data(self, query, limit=None):
+    def fetch_data(self, query, data, limit=None):
         """Fetch data from a table with an optional limit."""
         try:
-            self.cursor.execute(query)
+            self.cursor.execute(query, data)
             if limit is not None:
                 results = self.cursor.fetchmany(limit)
             else:

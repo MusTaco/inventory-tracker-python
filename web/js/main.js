@@ -80,9 +80,13 @@ if (form) {
         // Collect form data using FormData
         const formData = new FormData(form);
         const dataObject = {};
+        let hasEmptyFields = false;
     
         formData.forEach((value, key) => {
             // If the key already exists, push the value into an array
+            if (value.trim() == "") {
+                hasEmptyFields = true;
+            }
             if (dataObject[key]) {
                 if (Array.isArray(dataObject[key])) {
                     dataObject[key].push(value);
@@ -94,6 +98,11 @@ if (form) {
                 dataObject[key] = value;
             }
         });
+
+        if (hasEmptyFields) {
+            alert('Cannot leave empty fields!');
+            return;
+        }
     
         // Log the dictionary to check the structure
         console.log(dataObject);
@@ -114,17 +123,57 @@ if (product_form) {
         // Collect form data using FormData
         const formData = new FormData(product_form);
         const dataObject = {};
+        const target = e.target;
+        const collectionValue = target.getAttribute('data-collection');
+        console.log(collectionValue)
     
         formData.forEach((value, key) => {
+            value = value.trim();
             dataObject[key] = value;
         });
+
+        // Check if None selected
+        let itemSelected = dataObject['winterCollection'] || dataObject['summerCollection'];
+
+        if (!itemSelected) {
+            alert('No item selected! Please select an item');
+            return;
+        }
+
+        // Extract and validate stock fields
+        let stockInflow = dataObject['stock-inflow'] || null;
+        let stockOutflow = dataObject['stock-outflow'] || null;
+
+        // Ensure fields are integers
+        if (stockInflow && !Number.isInteger(Number(stockInflow))) {
+            alert('Stock inflow must be an integer!');
+            return;
+        }
+        if (stockOutflow && !Number.isInteger(Number(stockOutflow))) {
+            alert('Stock outflow must be an integer!');
+            return;
+        }
+
+        // Check if both fields are empty
+        if (!stockInflow && !stockOutflow) {
+            alert('Both "stock-inflow" and "stock-outflow" cannot be empty!');
+            return;
+        }
+
+        // Assign default value of 0 if one of the fields is empty
+        dataObject['stock-inflow'] = stockInflow ? Number(stockInflow) : 0;
+        dataObject['stock-outflow'] = stockOutflow ? Number(stockOutflow) : 0;
     
         // Log the dictionary to check the structure
         console.log(dataObject);
     
         
         // Send data to the Python function via Eel
-        await eel.add_new_product_record(dataObject);
+        if (collectionValue === 'winter') {
+            await eel.add_new_product_record(dataObject, "winter_stock");
+        } else if (collectionValue === 'summer') {
+            await eel.add_new_product_record(dataObject, "summer_stock");
+        }
         alert('Record added!')
     
         location.reload();
@@ -139,12 +188,25 @@ if (products) {
         console.log('its working');
         link.addEventListener('click', async function (e) {
             e.preventDefault();
-            document.getElementById('winter-collection').style.display = 'none';
+            document.getElementById('stock-collection').style.display = 'none';
             document.getElementById('show-table').style.display = 'block';
             const productDesc = this.getAttribute('data-product-id');
             console.log(productDesc)
 
-            const records = await eel.get_product_records(productDesc)();
+            const target = document.querySelector('#new-record-form');
+            const collectionValue = target.getAttribute('data-collection');
+            console.log(collectionValue)
+            // const records = await eel.get_product_records(productDesc, "winter_stock")();
+            let records;
+
+
+            if (collectionValue === 'winter') {
+                records = await eel.get_product_records(productDesc, "winter_stock")();
+            } else if (collectionValue === 'summer') {
+                records = await eel.get_product_records(productDesc, "summer_stock")();
+            }
+
+            
 
             // Populate the table with fetched records
             const tableBody = document.getElementById('tableBody');
