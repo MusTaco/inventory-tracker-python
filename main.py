@@ -154,11 +154,11 @@ def add_new_product_record(formData, season):
     collection = 'winterCollection' if season == 'winter_stock' else 'summerCollection'
     create_table = create_winter_table if season == 'winter_stock' else create_summer_table
 
-    select_query = f"SELECT * FROM {season} WHERE product_desc = ?"
-    previous_data = db.fetch_data(select_query, (formData[collection],), 1)
-    print(previous_data)
+    select_query = f"SELECT remaining_stock FROM {season} WHERE product_desc = ? ORDER BY product_id DESC"
+    previous_data = db.fetch_data(select_query, (formData[collection],), limit=1)
+    print(f"previous_data: {previous_data[0][0]}")
     if len(previous_data) > 0:
-        remaining_stock = previous_data[-1][-1] + int(formData['stock-inflow']) - int(formData['stock-outflow'])
+        remaining_stock = previous_data[0][0] + int(formData['stock-inflow']) - int(formData['stock-outflow'])
 
     else:
         remaining_stock = int(formData['stock-inflow']) - int(formData['stock-outflow'])
@@ -197,6 +197,7 @@ def get_client_record(telephone):
         SELECT bill_number, created_at, bill_path
         FROM client_history
         WHERE bill_number = ?
+        ORDER BY client_id DESC
         """
         results = db.fetch_data(select_query, (telephone,))
         print(results)
