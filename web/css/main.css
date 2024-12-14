@@ -82,7 +82,7 @@ nav h1 {
     padding: 20px;
     padding-top: 0px;
     border-radius: 20px;
-    background-color: lightgray;
+    /* background-color: lightgray; */
     margin-top: 30px;
     min-width: 700px;
 }
@@ -104,4 +104,25 @@ nav h1 {
 
 .alert {
     display: none;
+}
+
+.product-link {
+    cursor: pointer; 
+    background-color: 
+    #000000; 
+    color: white;
+    width: 100%; 
+    padding: 20px; 
+    min-width: 700px;
+    margin-bottom: 10px;
+}
+
+.product-link .view-more {
+    background-color: white;
+    padding: 10px 20px;
+    border-radius: 20px;
+}
+
+.collection {
+    max-height: 100px;
 }
