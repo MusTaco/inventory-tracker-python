@@ -41,6 +41,13 @@ const itemList = document.querySelector('#items');
 let billItems = 1;
 
 
+// Show error alert
+function showAlert(errorMessage) {
+    let elem = document.querySelector('.alert');
+    elem.innerHTML = errorMessage;
+    elem.style.display = 'block';
+}
+
 //Add item
 if(addItem) {
     addItem.addEventListener("click", (e) => {
@@ -71,6 +78,11 @@ if(addItem) {
 }
 
 
+// Check valid number
+function isNotValidNumber(value) {
+    return !(typeof value === 'number' && !isNaN(value) && Number.isFinite(value) && !Number.isInteger(value));
+}
+
 //Bill generator
 const form = document.querySelector('#generate-bill');
 if (form) {
@@ -100,10 +112,29 @@ if (form) {
         });
 
         if (hasEmptyFields) {
-            alert('Cannot leave empty fields!');
+            showAlert('Cannot leave empty fields!');
+            return;
+        }
+
+        const billNumber = dataObject['bill-number'];
+        const itemQty = Number(dataObject['item-qty']);
+        const itemPrice = Number(dataObject['item-price']);
+
+        if (!/^\d{11}$/.test(billNumber)) {
+            showAlert('Invalid phone number! Correct format is 03#########');
             return;
         }
     
+        if (!Number.isInteger(itemQty) || itemQty < 0) {
+            showAlert('Invalid value for quantity! Can only be a positive integer');
+            return;
+        }
+
+        if (!Number.isFinite(itemPrice) || itemPrice < 0) {
+            showAlert('Invalid value for price!');
+            return;
+        }
+
         // Log the dictionary to check the structure
         console.log(dataObject);
     
@@ -136,7 +167,7 @@ if (product_form) {
         let itemSelected = dataObject['winterCollection'] || dataObject['summerCollection'];
 
         if (!itemSelected) {
-            alert('No item selected! Please select an item');
+            showAlert('No item selected! Please select an item');
             return;
         }
 
@@ -146,11 +177,11 @@ if (product_form) {
 
         // Ensure fields are integers
         if (stockInflow && !Number.isInteger(Number(stockInflow))) {
-            alert('Stock inflow must be an integer!');
+            showAlert('Stock inflow must be an integer!');
             return;
         }
         if (stockOutflow && !Number.isInteger(Number(stockOutflow))) {
-            alert('Stock outflow must be an integer!');
+            showAlert('Stock outflow must be an integer!');
             return;
         }
 
@@ -231,7 +262,7 @@ if (products) {
 }
 
 
-// Show product record
+// Show client record
 const searchPhone = document.querySelector('#search-client-history');
 const searchBox = document.querySelector('#search-bar');
 if (searchPhone && searchBox) {
