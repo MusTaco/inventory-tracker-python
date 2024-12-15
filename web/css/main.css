@@ -92,10 +92,17 @@ nav h1 {
 }
 
 .add-btn {
-    background-color: lightgreen;
+    background-color: transparent;
+    color: white;
     padding: 5px;
     border-radius: 10px;
     border: none;
+    font-weight: 700;
+    font-size: 20px;
+}
+
+.plus-icon {
+    margin-right: 5px;
 }
 
 #show-table {
@@ -108,21 +115,30 @@ nav h1 {
 
 .product-link {
     cursor: pointer; 
-    background-color: 
-    #000000; 
-    color: white;
+    
+    color: black;
     width: 100%; 
     padding: 20px; 
     min-width: 700px;
     margin-bottom: 10px;
 }
 
+.product-link:nth-child(even) {
+    background-color: green;
+}
+
 .product-link .view-more {
-    background-color: white;
+    background-color: #38ab55;
+    color: white;
     padding: 10px 20px;
     border-radius: 20px;
 }
 
-.collection {
-    max-height: 100px;
+.product-link:hover {
+    background-color: lightblue;
+}
+
+.menu-item-icon {
+    margin-right: 10px;
+    font-size: 20px;
 }
