@@ -67,6 +67,7 @@ if(addItem) {
             <div class="col">
                 <input type="text" placeholder="unit price.." class="form-control" name="item-price">
             </div>
+            
         `;
         itemList.appendChild(newItem);
         billItems+=1;
@@ -117,22 +118,41 @@ if (form) {
         }
 
         const billNumber = dataObject['bill-number'];
-        const itemQty = Number(dataObject['item-qty']);
-        const itemPrice = Number(dataObject['item-price']);
+        
 
         if (!/^\d{11}$/.test(billNumber)) {
             showAlert('Invalid phone number! Correct format is 03#########');
             return;
         }
-    
-        if (!Number.isInteger(itemQty) || itemQty < 0) {
-            showAlert('Invalid value for quantity! Can only be a positive integer');
-            return;
-        }
 
-        if (!Number.isFinite(itemPrice) || itemPrice < 0) {
-            showAlert('Invalid value for price!');
-            return;
+        if (Array.isArray(dataObject['item-qty'])) {
+                for (i=0; i<dataObject['item-qty'].length; i++) {
+                    const itemQty = Number(dataObject['item-qty'][i]);
+                    const itemPrice = Number(dataObject['item-price'][i]);
+                
+                    if (!Number.isInteger(itemQty) || itemQty < 0) {
+                        showAlert('Invalid value for quantity! Can only be a positive integer');
+                        return;
+                    }
+
+                    if (!Number.isFinite(itemPrice) || itemPrice < 0) {
+                        showAlert('Invalid value for price!');
+                        return;
+                    }
+                }
+        } else {
+            const itemQty = Number(dataObject['item-qty']);
+            const itemPrice = Number(dataObject['item-price']);
+        
+            if (!Number.isInteger(itemQty) || itemQty < 0) {
+                showAlert('Invalid value for quantity! Can only be a positive integer');
+                return;
+            }
+
+            if (!Number.isFinite(itemPrice) || itemPrice < 0) {
+                showAlert('Invalid value for price!');
+                return;
+            }
         }
 
         // Log the dictionary to check the structure
