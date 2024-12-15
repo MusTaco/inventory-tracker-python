@@ -11,6 +11,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Roboto+Mono:ital,wght@0,100..700;1,100..700&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.1/css/all.min.css">
     <link rel="stylesheet" href="../css/main.css">
 
     <script type="text/javascript" src="/eel.js"></script>
@@ -18,44 +19,44 @@
 <body>
 
     <div class="d-flex flex-row">
-        <div class="d-flex flex-column flex-shrink-0 p-3 text-bg-dark vh-100 position-fixed" style="width: 280px; ">
-            <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
-              <svg class="bi pe-none me-2" width="40" height="32"><use xlink:href="#bootstrap"></use></svg>
-              <span class="fs-4">Inventory <br>tracker</span>
-            </a>
-            <hr>
-            <ul class="nav nav-pills flex-column mb-auto">
-              <li class="nav-item">
-                <a href="../main.html" class="nav-link text-white">
-                  <svg class="bi pe-none me-2" width="16" height="16"><use xlink:href="#home"></use></svg>
-                  Home
-                </a>
-              </li>
-              <li>
-                <a href="../pages/winter.html" class="nav-link text-white">
-                  <svg class="bi pe-none me-2" width="16" height="16"><use xlink:href="#speedometer2"></use></svg>
-                  Winter's Collection
-                </a>
-              </li>
-              <li>
-                <a href="../pages/summer.html" class="nav-link text-white">
-                  <svg class="bi pe-none me-2" width="16" height="16"><use xlink:href="#table"></use></svg>
-                  Summer's Collection
-                </a>
-              </li>
+      <div class="d-flex flex-column flex-shrink-0 p-3 vh-100 position-fixed" style="width: 280px; background-color: black;">
+          <a href="/" class="d-flex align-items-center mb-3 mt-5 mb-md-0 me-md-auto text-white text-decoration-none">
+            <svg class="bi pe-none me-2" width="40" height="32"><use xlink:href="#bootstrap"></use></svg>
+            <span class="fs-4">Inventory <br>tracker</span>
+          </a>
+          <hr style="color: white;">
+          <ul class="nav nav-pills flex-column mb-auto">
+            <li class="nav-item">
+              <a href="../main.html" class="nav-link text-white">
+                <i class="fa-solid fa-house menu-item-icon"></i>
+                Home
+              </a>
+            </li>
+            <li>
+              <a href="../pages/winter.html" class="nav-link text-white">
+                <i class="fa-regular fa-snowflake menu-item-icon"></i>
+                Winter's Collection
+              </a>
+            </li>
+            <li>
+              <a href="../pages/summer.html" class="nav-link text-white">
+                <i class="fa-regular fa-sun menu-item-icon"></i>
+                Summer's Collection
+              </a>
+            </li>
 
-              <li>
-                <a href="../pages/bill_generator.html" class="nav-link active">
-                  <svg class="bi pe-none me-2" width="16" height="16"><use xlink:href="#people-circle"></use></svg>
-                  Bill Generator
-                </a>
-              </li>
-            </ul>
-            <hr>
-        </div>
+            <li>
+              <a href="../pages/bill_generator.html" class="nav-link active">
+                <i class="fa-solid fa-money-bill menu-item-icon"></i>
+                Bill Generator
+              </a>
+            </li>
+          </ul>
+          <hr>
+      </div>
 
         <div class="collection margin-left row">
-            <div class="new-record">
+            <div class="new-record bg-success text-light">
                 <form class="new-record-form", id="generate-bill">
                     <div class="row">
                         <h1>Generate invoice</h1>
@@ -123,13 +124,13 @@
 
                     <div class="row m-3">
                       <div class="col d-flex align-items-center justify-content-center">
-                          <button class="add-btn" id="add-item">Add item</button>
+                          <button class="add-btn" id="add-item"><i class="fa-solid fa-plus plus-icon"></i>Add</button>
                       </div>
                     </div>
 
                     <div class="row">
                         <div class="col">
-                            <input type="submit" value="submit" class="btn btn-primary mt-3">
+                            <input type="submit" value="submit" class="btn btn-danger mt-3">
                         </div>
                     </div>
 
