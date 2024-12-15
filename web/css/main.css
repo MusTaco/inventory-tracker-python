@@ -115,7 +115,7 @@ nav h1 {
 
 .product-link {
     cursor: pointer; 
-    
+    background-color: white;
     color: black;
     width: 100%; 
     padding: 20px; 

@@ -244,10 +244,12 @@ if (products) {
             const productDesc = this.getAttribute('data-product-id');
             console.log(productDesc)
 
+            const entriesCount = document.querySelector('.entries-count');
+            const itemName = link.querySelector(`span`);
+
             const target = document.querySelector('#new-record-form');
             const collectionValue = target.getAttribute('data-collection');
             console.log(collectionValue)
-            // const records = await eel.get_product_records(productDesc, "winter_stock")();
             let records;
 
 
@@ -257,7 +259,7 @@ if (products) {
                 records = await eel.get_product_records(productDesc, "summer_stock")();
             }
 
-            
+            entriesCount.innerHTML = `<span class='text-primary'>[${records.length}]</span> Showing results for <span class='text-primary'>${itemName.innerHTML}</span>`;
 
             // Populate the table with fetched records
             const tableBody = document.getElementById('tableBody');
