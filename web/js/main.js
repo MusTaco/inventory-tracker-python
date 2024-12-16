@@ -70,10 +70,10 @@ if(addItem) {
             
         `;
         itemList.appendChild(newItem);
-        billItems+=1;
-        if (billItems >= 14) {
-            addItem.style.display = 'none';
-        }
+        // billItems+=1;
+        // if (billItems >= 14) {
+        //     addItem.style.display = 'none';
+        // }
     });
     
 }
