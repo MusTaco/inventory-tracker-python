@@ -130,7 +130,7 @@ if (form) {
                     const itemQty = Number(dataObject['item-qty'][i]);
                     const itemPrice = Number(dataObject['item-price'][i]);
                 
-                    if (!Number.isInteger(itemQty) || itemQty < 0) {
+                    if (!Number.isInteger(itemQty) || itemQty < 0 || dataObject['item-qty'][i].includes('.')) {
                         showAlert('Invalid value for quantity! Can only be a positive integer');
                         return;
                     }
@@ -144,7 +144,7 @@ if (form) {
             const itemQty = Number(dataObject['item-qty']);
             const itemPrice = Number(dataObject['item-price']);
         
-            if (!Number.isInteger(itemQty) || itemQty < 0) {
+            if (!Number.isInteger(itemQty) || itemQty < 0 || dataObject['item-qty'].includes('.')) {
                 showAlert('Invalid value for quantity! Can only be a positive integer');
                 return;
             }
@@ -159,8 +159,17 @@ if (form) {
         console.log(dataObject);
     
         // Send data to the Python function via Eel
-        await eel.create_bill(dataObject);
-        alert('Invoice created!');
+        await eel.create_bill(dataObject)().then(response => {
+            if (response === 1) {
+                alert('invoice created!');
+            }
+            else {
+                console.log(response);
+                showAlert('There was some error while processing the inputs! Please make sure all inputs are correct');
+                return;
+            }
+        });
+
         location.reload();
     });
     

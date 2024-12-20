@@ -1,13 +1,11 @@
 import eel
-from reportlab.lib.pagesizes import letter
-from reportlab.pdfgen import canvas
-from reportlab.lib import colors
-from reportlab.platypus import Table, TableStyle
 from datetime import date
 from modules.db import Database
 import pandas as pd
 import os
 import subprocess
+from jinja2 import Environment, FileSystemLoader
+from weasyprint import HTML
 
 eel.init('web')
 
@@ -50,6 +48,13 @@ CREATE TABLE IF NOT EXISTS summer_stock (
 
 @eel.expose  # Expose this function to be callable from JavaScript
 def create_bill(formData):
+    # Jinja Environment
+    env = Environment(loader=FileSystemLoader('templates'))
+    template = env.get_template('invoice_template.html')
+
+    relative_logo_path = "../templates/logo.png"
+    absolute_logo_path = os.path.abspath(relative_logo_path)
+
     today = date.today()
     
     insert_query = "INSERT INTO client_history (bill_name, bill_number, ship_name, ship_city, created_at) VALUES (?, ?, ?, ?, ?)"
@@ -57,94 +62,48 @@ def create_bill(formData):
     file_name = f"client_id_{invoice_number}.pdf"
     file_path = f"invoice/{file_name}"
 
-    # Create the PDF canvas
-    c = canvas.Canvas(file_path, pagesize=letter)
-    width, height = letter
-
-    # Header Section
-    c.setFont("Helvetica-Bold", 20)
-    c.setFillColor(colors.green)
-    c.drawString(200, height - 50, "Danish Garments Manufacturer")
-    c.setFont("Helvetica", 10)
-    c.setFillColor(colors.black)
-    c.drawString(200, height - 70, "Jaranawala Road Akhri Stop")
-    c.drawString(200, height - 85, "Near Gulshan Sweet Bakery")
-    c.drawString(200, height - 100, "Phone: +92 302 6015067")
-    c.line(30, height - 110, width - 30, height - 110)
-
-    # Invoice Details
-    c.setFont("Helvetica-Bold", 12)
-    c.drawString(30, height - 140, "BILL TO:")
-    c.drawString(300, height - 140, "SHIP TO:")
-    c.setFont("Helvetica", 10)
-    c.drawString(30, height - 160, f"Name: {formData['bill-name']}")
-    c.drawString(300, height - 160, f"Name: {formData['ship-name']}")
-    c.drawString(30, height - 175, f"Phone: {formData['bill-number']}")
-    c.drawString(300, height - 175, f"City: {formData['ship-city']}")
-
-    # Invoice Metadata
-    c.drawString(30, height - 200, f"INVOICE #: {invoice_number}")
-    c.drawString(200, height - 200, f"DATE: {today}")
+    data = {
+        'bill_name': formData['bill-name'].capitalize(),
+        'invoice_number': invoice_number,
+        'bill_number': formData['bill-number'],
+        'date': today,
+        'logo': absolute_logo_path
+    }
 
     # Table Header and Blank Data Rows
-    data = [
-        ["ITEM #", "DESCRIPTION", "QTY", "UNIT PRICE", "TOTAL"],
-    ]
+    items = []
 
     subTotal = 0
 
     # Add empty rows (14 total) for blank fields
     if type(formData["item-description"]) == list:
         for i in range(len(formData["item-description"])):
-            totalItemPrice = int(formData['item-qty'][i]) * int(formData['item-price'][i])
+            totalItemPrice = round(int(formData['item-qty'][i]) * float(formData['item-price'][i]), 2)
             subTotal += totalItemPrice
-            data.append([str(i + 1), formData['item-description'][i], formData['item-qty'][i], formData['item-price'][i], totalItemPrice])
-        for i in range(len(formData["item-description"])-1, 14):
-            data.append([str(i + 1), "", "", "", ""])
+            items.append([str(i + 1), formData['item-description'][i], formData['item-qty'][i], formData['item-price'][i], "{:,.2f}".format(totalItemPrice)])
+
 
     else:
-        totalItemPrice = int(formData['item-qty']) * int(formData['item-price'])
+        totalItemPrice = round(int(formData['item-qty']) * float(formData['item-price']), 2)
         subTotal += totalItemPrice
-        data.append(["1", formData['item-description'], formData['item-qty'], formData['item-price'], totalItemPrice])
-        for i in range(1, 14):
-            data.append([str(i + 1), "", "", "", ""])
+        items.append(["1", formData['item-description'], formData['item-qty'], formData['item-price'], "{:,.2f}".format(totalItemPrice)])
 
 
-    # Add Subtotal and Total rows
-    # data.append(["", "", "", "SUBTOTAL", ""])
-    data.append(["", "", "", "TOTAL", f"RS {subTotal}"])
+    serialNum = len(items)
 
-    # Table Styling
-    table = Table(data, colWidths=[50, 200, 50, 70, 70, 100])
-    style = TableStyle([
-        ('BACKGROUND', (0, 0), (-1, 0), colors.darkblue),
-        ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
-        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
-        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-        ('FONTSIZE', (0, 0), (-1, -1), 10),
-        ('BOTTOMPADDING', (0, 0), (-1, 0), 8),
-        ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
-        ('GRID', (0, 0), (-1, -1), 1, colors.black),
-    ])
-    table.setStyle(style)
+    while serialNum < 10:
+        items.append([str(serialNum+1), "", "", "", ""])
+        serialNum+=1
 
-    # Draw Table
-    table.wrapOn(c, width, height)
-    table.drawOn(c, 30, height - 600)  # Adjust starting position of the table to prevent overlap
+    data['item_list'] = items
+    data['total'] = "{:,.2f}".format(round(subTotal, 2))
 
-    # Comments Section
-    c.setFont("Helvetica", 10)
-    c.drawString(30, height - 620, "Other Comments or Special Instructions:")
-    for i in range(4):
-        c.drawString(30, height - 640 - (i * 15), f"{i + 1}. ___________________________________________")
 
-    # Footer Section
-    c.setFont("Helvetica-Oblique", 8)
-    c.drawString(30, 30, "Thank you for your business!")
+    html_content = template.render(data)
 
-    # # Save the PDF
-    c.save()
-    print(f"Invoice '{file_name}' generated successfully.")
+    HTML(string=html_content, base_url = 'templates').write_pdf(file_path)
+    return 1
+
 
 
 @eel.expose
