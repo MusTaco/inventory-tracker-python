@@ -41,11 +41,36 @@ const itemList = document.querySelector('#items');
 let billItems = 1;
 
 
-// Show error alert
-function showAlert(errorMessage) {
-    let elem = document.querySelector('.alert');
-    elem.innerHTML = errorMessage;
+
+function showAlert(message, type = 'danger', autoHide = false, duration = 5000, defaultElem = 0) {
+    let elem = document.querySelectorAll('.alert')[defaultElem];
+    if (!elem) return; // Exit if no alert element is found
+
+    // Reset alert classes
+    elem.className = `alert alert-${type}`; // Overwrite className for clean slate
+
+    // Set the message
+    elem.innerHTML = message;
+
+    // Display the alert
     elem.style.display = 'block';
+
+    // Auto-hide logic
+    if (autoHide) {
+        setTimeout(() => {
+            elem.style.display = 'none';
+        }, duration);
+    }
+}
+
+
+
+// Check phone number validity
+function checkNumberValidity(number) {
+    if (!/^\d{11}$/.test(number)) {
+        return false;
+    }
+    return true;
 }
 
 //Add item
@@ -120,7 +145,7 @@ if (form) {
         const billNumber = dataObject['bill-number'];
         
 
-        if (!/^\d{11}$/.test(billNumber)) {
+        if (!checkNumberValidity(billNumber)) {
             showAlert('Invalid phone number! Correct format is 03#########');
             return;
         }
@@ -161,7 +186,7 @@ if (form) {
         // Send data to the Python function via Eel
         await eel.create_bill(dataObject)().then(response => {
             if (response === 1) {
-                alert('invoice created!');
+                showAlert('Invoice created!', type='success');
             }
             else {
                 console.log(response);
@@ -170,7 +195,6 @@ if (form) {
             }
         });
 
-        location.reload();
     });
     
 }
@@ -216,7 +240,7 @@ if (product_form) {
 
         // Check if both fields are empty
         if (!stockInflow && !stockOutflow) {
-            alert('Both "stock-inflow" and "stock-outflow" cannot be empty!');
+            showAlert('Both "Stock inflow" and "Stock outflow" cannot be empty!');
             return;
         }
 
@@ -234,9 +258,66 @@ if (product_form) {
         } else if (collectionValue === 'summer') {
             await eel.add_new_product_record(dataObject, "summer_stock");
         }
-        alert('Record added!')
+        showAlert('Record added!', type = 'success');
     
-        location.reload();
+    });
+}
+
+
+// Manage balance
+const balance_form = document.querySelector('#balance-form');
+if (balance_form) {
+    balance_form.addEventListener('submit', async (e) => {
+        e.preventDefault(); // Prevent default form submission behavior
+        // Collect form data using FormData
+        const formData = new FormData(balance_form);
+        const dataObject = {};
+    
+        formData.forEach((value, key) => {
+            value = value.trim();
+            dataObject[key] = value;
+        });
+
+        // Check if None selected
+        const telephone = dataObject['telephone'];
+
+        if (!checkNumberValidity(telephone)) {
+            showAlert('Invalid phone number! Correct format is 03#########', 'danger', false, 5000, defaultElem = 1);
+            return;
+        }
+
+        // Extract and validate stock fields
+        let credit = dataObject['credit'] || null;
+        let debit = dataObject['debit'] || null;
+
+        // Ensure fields are integers
+        if (credit && !Number.isInteger(Number(credit))) {
+            showAlert('Credit must be an integer!', 'danger', false, 5000, defaultElem = 1);
+            return;
+        }
+        if (debit && !Number.isInteger(Number(debit))) {
+            showAlert('Credit must be an integer!', 'danger', false, 5000, defaultElem = 1);
+            return; 
+        }
+
+        // Check if both fields are empty
+        if (!credit && !debit) {
+            showAlert('Credit must be an integer!', 'danger', false, 5000, defaultElem = 1);
+            return;
+        }
+
+        // Assign default value of 0 if one of the fields is empty
+        dataObject['credit'] = credit ? Number(credit) : 0;
+        dataObject['debit'] = debit ? Number(debit) : 0;
+    
+        // Log the dictionary to check the structure
+        console.log(dataObject);
+    
+        
+        // Send data to the Python function via Eel
+        await eel.manage_balance(dataObject);
+        showAlert('Record added!', type = 'success');
+    
     });
 }
 
@@ -300,6 +381,11 @@ if (searchPhone && searchBox) {
     console.log('its working');
     searchPhone.addEventListener('submit', async function (e) {
         e.preventDefault();
+
+        if (!checkNumberValidity(searchBox.value)) {
+            showAlert('Invalid phone number! Correct format is 03#########');
+            return;
+        }
         
         const records = await eel.get_client_record(searchBox.value)();
 

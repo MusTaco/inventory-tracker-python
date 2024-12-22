@@ -46,6 +46,17 @@ CREATE TABLE IF NOT EXISTS summer_stock (
 )
 """
 
+create_balance_table = """
+CREATE TABLE IF NOT EXISTS balance_table (
+    balance_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    balance_number TEXT NOT NULL,
+    date TEXT NOT NULL,
+    debit REAL,
+    credit REAL,
+    remaining_balance REAL
+)
+"""
+
 @eel.expose  # Expose this function to be callable from JavaScript
 def create_bill(formData):
     # Jinja Environment
@@ -115,8 +126,8 @@ def add_new_product_record(formData, season):
 
     select_query = f"SELECT remaining_stock FROM {season} WHERE product_desc = ? ORDER BY product_id DESC"
     previous_data = db.fetch_data(select_query, (formData[collection],), limit=1)
-    print(f"previous_data: {previous_data[0][0]}")
     if len(previous_data) > 0:
+        print(f"previous_data: {previous_data[0][0]}")
         remaining_stock = previous_data[0][0] + int(formData['stock-inflow']) - int(formData['stock-outflow'])
 
     else:
@@ -166,6 +177,27 @@ def get_client_record(telephone):
         print(f'Database error: {e}')
         return []
         
+
+# Manage balance
+@eel.expose
+def manage_balance(formData):
+    today = date.today()
+
+    create_table = create_balance_table
+
+    select_query = f"SELECT remaining_balance FROM balance_table WHERE balance_number = ? ORDER BY balance_id DESC"
+    previous_data = db.fetch_data(select_query, (formData['telephone'],), limit=1)
+    if len(previous_data) > 0:
+        print(f"previous_data: {previous_data[0][0]}")
+        remaining_balance = previous_data[0][0] + int(formData['credit']) - int(formData['debit'])
+
+    else:
+        remaining_balance = int(formData['credit']) - int(formData['debit'])
+    print(remaining_balance)
+
+    insert_query = f"INSERT INTO balance_table (balance_number, date, credit, debit, remaining_balance) VALUES (?, ?, ?, ?, ?)"
+    invoice_number = db.insert_data('balance_table', create_table, insert_query, (formData['telephone'], today, formData['credit'], formData['debit'], remaining_balance))
+
 
 
 #open file
