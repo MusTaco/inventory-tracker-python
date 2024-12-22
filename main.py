@@ -160,16 +160,24 @@ def get_product_records(product_desc, season):
         
 
 @eel.expose
-def get_client_record(telephone):
+def get_client_record(telephone, record_type):
     print(telephone)
     try:
-        select_query = f"""
+        select_invoice_history = f"""
         SELECT bill_number, created_at, bill_path
         FROM client_history
         WHERE bill_number = ?
         ORDER BY client_id DESC
         """
-        results = db.fetch_data(select_query, (telephone,))
+
+        select_balance_history = f"""
+        SELECT balance_number, date, debit, credit, remaining_balance
+        FROM balance_table
+        WHERE balance_number = ?
+        ORDER BY balance_id DESC
+        """
+
+        results = db.fetch_data(select_invoice_history if record_type == 'invoice' else select_balance_history, (telephone,))
         print(results)
         return results
 

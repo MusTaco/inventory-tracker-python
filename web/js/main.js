@@ -316,7 +316,7 @@ if (balance_form) {
         
         // Send data to the Python function via Eel
         await eel.manage_balance(dataObject);
-        showAlert('Record added!', type = 'success');
+        showAlert('Record added!', 'success', false, 5000, defaultElem = 1)
     
     });
 }
@@ -373,6 +373,26 @@ if (products) {
     })
 }
 
+// Select type of record
+const selectRecord = document.querySelector('#selectRecord');
+if (selectRecord) {
+    selectRecord.addEventListener('change', function () {
+        const selectedValue = this.value;
+      
+        // Get table elements
+        const invoiceTable = document.getElementById('clients-table');
+        const balanceTable = document.getElementById('balance-table');
+      
+        // Show or hide tables based on selection
+        if (selectedValue === 'invoice-record') {
+          invoiceTable.style.display = 'table'; // Show invoice table
+          balanceTable.style.display = 'none'; // Hide balance table
+        } else if (selectedValue === 'balance-record') {
+          balanceTable.style.display = 'table'; // Show balance table
+          invoiceTable.style.display = 'none'; // Hide invoice table
+        }
+    });
+}
 
 // Show client record
 const searchPhone = document.querySelector('#search-client-history');
@@ -387,11 +407,14 @@ if (searchPhone && searchBox) {
             return;
         }
         
-        const records = await eel.get_client_record(searchBox.value)();
+        const records = await eel.get_client_record(searchBox.value, 'invoice')();
+        const balance_records = await eel.get_client_record(searchBox.value, 'balance')();
 
         // Populate the table with fetched records
         const tableBody = document.getElementById('tableBody');
+        const balanceTableBody = document.getElementById('balanceTableBody');
         tableBody.innerHTML = ''; // Clear previous records
+        balanceTableBody.innerHTML = '';
 
         if (records.length === 0) {
             tableBody.innerHTML = '<tr><td colspan="4">No records found</td></tr>';
@@ -421,6 +444,23 @@ if (searchPhone && searchBox) {
                         .then(() => console.log(`Requested to open file: ${fileName}`))
                         .catch(err => console.error('Error opening file:', err));
                 });
+            });
+        }
+
+        if (balance_records.length === 0) {
+            balanceTableBody.innerHTML = '<tr><td colspan="6">No records found</td></tr>';
+        } else {
+            balance_records.forEach(record => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${record[0]}</td>
+                    <td>${record[1]}</td>
+                    <td>${record[2]}</td>
+                    <td>${record[3]}</td>
+                    <td>${record[4]}</td>
+
+                `;
+                balanceTableBody.appendChild(row);
             });
         }
     });

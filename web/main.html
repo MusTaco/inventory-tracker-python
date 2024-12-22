@@ -66,6 +66,13 @@
                 <input type="text" class="search-bar" placeholder="Search phone..." id="search-bar">
                 <input type="submit" class="form-control btn btn-danger" style = "width: 100px;">
             </form>
+
+            <div class="row m-2">
+              <select class="form-select bg-danger text-light" id="selectRecord">
+                <option value="invoice-record">Invoice</option>
+                <option value="balance-record">Balance</option>
+              </select>
+            </div>
             
             <div class="row mt-4">
               <table class="table table-striped table-light" style="text-align: center;" id="clients-table">
@@ -81,6 +88,21 @@
                 </tbody>
               </table>
               
+              <table class="table table-striped table-light" style="text-align: center; display: none;" id="balance-table">
+                <thead>
+                  <tr>
+                    <th scope="col">Phone #</th>
+                    <th scope="col">Date</th>
+                    <th scope="col">Debit</th>
+                    <th scope="col">Credit</th>
+                    <th scope="col">Balance</th>
+                  </tr>
+                </thead>
+                <tbody id="balanceTableBody">
+                  <!-- Rows will be dynamically added here -->
+                </tbody>
+              </table>
+
             </div>
         </div>
     </div>
