@@ -163,21 +163,45 @@ def get_product_records(product_desc, season):
 def get_client_record(telephone, record_type):
     print(telephone)
     try:
-        select_invoice_history = f"""
-        SELECT bill_number, created_at, bill_path
-        FROM client_history
-        WHERE bill_number = ?
-        ORDER BY client_id DESC
-        """
+        
+        if telephone == "remaining":
+            select_invoice_history = """
+            SELECT bill_number, created_at, bill_path
+            FROM client_history
+            ORDER BY client_id DESC
+            """
+            select_balance_history = f"""
+            SELECT 
+                b.balance_number, 
+                b.date, 
+                b.debit, 
+                b.credit, 
+                b.remaining_balance
+            FROM balance_table b
+            WHERE b.balance_id = (
+                SELECT MAX(balance_id)
+                FROM balance_table
+                WHERE balance_number = b.balance_number
+            ) 
+            AND b.remaining_balance < 0;
+            """
+            results = db.fetch_data(select_invoice_history if record_type == 'invoice' else select_balance_history, ())
+        else:
+            select_invoice_history = f"""
+            SELECT bill_number, created_at, bill_path
+            FROM client_history
+            WHERE bill_number = ?
+            ORDER BY client_id DESC
+            """
 
-        select_balance_history = f"""
-        SELECT balance_number, date, debit, credit, remaining_balance
-        FROM balance_table
-        WHERE balance_number = ?
-        ORDER BY balance_id DESC
-        """
+            select_balance_history = f"""
+            SELECT balance_number, date, debit, credit, remaining_balance
+            FROM balance_table
+            WHERE balance_number = ?
+            ORDER BY balance_id DESC
+            """
+            results = db.fetch_data(select_invoice_history if record_type == 'invoice' else select_balance_history, (telephone,))
 
-        results = db.fetch_data(select_invoice_history if record_type == 'invoice' else select_balance_history, (telephone,))
         print(results)
         return results
 
@@ -197,10 +221,10 @@ def manage_balance(formData):
     previous_data = db.fetch_data(select_query, (formData['telephone'],), limit=1)
     if len(previous_data) > 0:
         print(f"previous_data: {previous_data[0][0]}")
-        remaining_balance = previous_data[0][0] + int(formData['credit']) - int(formData['debit'])
+        remaining_balance = previous_data[0][0] + float(formData['credit']) - float(formData['debit'])
 
     else:
-        remaining_balance = int(formData['credit']) - int(formData['debit'])
+        remaining_balance = float(formData['credit']) - float(formData['debit'])
     print(remaining_balance)
 
     insert_query = f"INSERT INTO balance_table (balance_number, date, credit, debit, remaining_balance) VALUES (?, ?, ?, ?, ?)"

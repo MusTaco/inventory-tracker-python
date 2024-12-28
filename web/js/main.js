@@ -43,6 +43,7 @@ let billItems = 1;
 
 
 function showAlert(message, type = 'danger', autoHide = false, duration = 5000, defaultElem = 0) {
+    message += ` <a href="#" onclick="location.reload();" style = "color: blue; text-decoration: underline;">click here to refresh to see changes</a>`;
     let elem = document.querySelectorAll('.alert')[defaultElem];
     if (!elem) return; // Exit if no alert element is found
 
@@ -95,10 +96,7 @@ if(addItem) {
             
         `;
         itemList.appendChild(newItem);
-        // billItems+=1;
-        // if (billItems >= 14) {
-        //     addItem.style.display = 'none';
-        // }
+
     });
     
 }
@@ -291,18 +289,18 @@ if (balance_form) {
         let debit = dataObject['debit'] || null;
 
         // Ensure fields are integers
-        if (credit && !Number.isInteger(Number(credit))) {
+        if (credit && !Number.isFinite(Number(credit))) {
             showAlert('Credit must be an integer!', 'danger', false, 5000, defaultElem = 1);
             return;
         }
-        if (debit && !Number.isInteger(Number(debit))) {
+        if (debit && !Number.isFinite(Number(debit))) {
             showAlert('Credit must be an integer!', 'danger', false, 5000, defaultElem = 1);
             return; 
         }
 
         // Check if both fields are empty
         if (!credit && !debit) {
-            showAlert('Credit must be an integer!', 'danger', false, 5000, defaultElem = 1);
+            showAlert('Both fields cannot be empty!', 'danger', false, 5000, defaultElem = 1);
             return;
         }
 
@@ -402,7 +400,7 @@ if (searchPhone && searchBox) {
     searchPhone.addEventListener('submit', async function (e) {
         e.preventDefault();
 
-        if (!checkNumberValidity(searchBox.value)) {
+        if (!checkNumberValidity(searchBox.value) && !(searchBox.value === 'remaining')) {
             showAlert('Invalid phone number! Correct format is 03#########');
             return;
         }
@@ -450,8 +448,20 @@ if (searchPhone && searchBox) {
         if (balance_records.length === 0) {
             balanceTableBody.innerHTML = '<tr><td colspan="6">No records found</td></tr>';
         } else {
+            let isFirstRow = true;
             balance_records.forEach(record => {
+
                 const row = document.createElement('tr');
+                if (isFirstRow && searchBox.value !== "remaining") {
+                    if (record[4] < 0) {
+                        row.classList.add('table-danger');
+                    }
+                    else {
+                        row.classList.add('table-success');
+                    }
+                    row.classList.add('text-light');
+                    isFirstRow = false;
+                }
                 row.innerHTML = `
                     <td>${record[0]}</td>
                     <td>${record[1]}</td>
