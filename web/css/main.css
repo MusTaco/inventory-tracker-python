@@ -142,3 +142,11 @@ nav h1 {
     margin-right: 10px;
     font-size: 20px;
 }
+
+.delete {
+    border: none;
+}
+
+.delete:hover {
+    color: red;
+}

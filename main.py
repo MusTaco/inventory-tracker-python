@@ -6,6 +6,7 @@ import os
 import subprocess
 from jinja2 import Environment, FileSystemLoader
 from weasyprint import HTML
+import os
 
 eel.init('web')
 
@@ -145,7 +146,7 @@ def get_product_records(product_desc, season):
     print(product_desc)
     try:
         select_query = f"""
-        SELECT date, stock_inflow, stock_outflow, remaining_stock
+        SELECT date, stock_inflow, stock_outflow, remaining_stock, product_id
         FROM {season}
         WHERE product_desc = ?
         ORDER BY product_id DESC;
@@ -166,7 +167,7 @@ def get_client_record(telephone, record_type):
         
         if telephone == "remaining":
             select_invoice_history = """
-            SELECT bill_number, created_at, bill_path
+            SELECT bill_number, created_at, bill_path, client_id
             FROM client_history
             ORDER BY client_id DESC
             """
@@ -176,7 +177,8 @@ def get_client_record(telephone, record_type):
                 b.date, 
                 b.debit, 
                 b.credit, 
-                b.remaining_balance
+                b.remaining_balance,
+                b.balance_id
             FROM balance_table b
             WHERE b.balance_id = (
                 SELECT MAX(balance_id)
@@ -188,14 +190,14 @@ def get_client_record(telephone, record_type):
             results = db.fetch_data(select_invoice_history if record_type == 'invoice' else select_balance_history, ())
         else:
             select_invoice_history = f"""
-            SELECT bill_number, created_at, bill_path
+            SELECT bill_number, created_at, bill_path, client_id
             FROM client_history
             WHERE bill_number = ?
             ORDER BY client_id DESC
             """
 
             select_balance_history = f"""
-            SELECT balance_number, date, debit, credit, remaining_balance
+            SELECT balance_number, date, debit, credit, remaining_balance, balance_id
             FROM balance_table
             WHERE balance_number = ?
             ORDER BY balance_id DESC
@@ -251,6 +253,26 @@ def open_file(file_name):
             print(f"File not found: {file_path}")
     except Exception as e:
         print(f"Error opening file: {e}")
+
+# Delete row
+@eel.expose
+def deleteRow(rowId, rowTable, idCol):
+    print(f"idcol = {idCol}")
+    delete_query = f"DELETE FROM {rowTable} WHERE {idCol} = ?"
+    db.delete_data(rowTable, delete_query, (rowId,))
+    if rowTable == "client_history":
+        try:
+            os.remove(f"invoice/client_id_{rowId}.pdf")
+        except FileNotFoundError:
+            pass
+
+
+# Delete item
+@eel.expose
+def deleteItem(rowTable, productDesc):
+    delete_query = f"DELETE FROM {rowTable} WHERE product_desc = ?"
+    print(productDesc)
+    db.delete_data(rowTable, delete_query, (productDesc,))
 
 
 eel.start('main.html', size=(1920, 1080))

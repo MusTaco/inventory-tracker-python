@@ -101,6 +101,17 @@ if(addItem) {
     
 }
 
+// Delete record
+
+async function deleteFunc(button, rowId, rowTable, idCol) {
+    const confirmation = window.confirm("Are you sure you want to delete this row?");
+    if (confirmation) {
+        const row = button.closest('tr');
+        row.remove();
+        await eel.deleteRow(rowId, rowTable, idCol)();
+        location.reload();
+    }
+}
 
 // Check valid number
 function isNotValidNumber(value) {
@@ -339,13 +350,26 @@ if (products) {
             const collectionValue = target.getAttribute('data-collection');
             console.log(collectionValue)
             let records;
+            const deleteItem = document.querySelector('.delete-item');
+            let tableName;
+            
 
 
             if (collectionValue === 'winter') {
                 records = await eel.get_product_records(productDesc, "winter_stock")();
+                tableName = "winter_stock";
             } else if (collectionValue === 'summer') {
                 records = await eel.get_product_records(productDesc, "summer_stock")();
+                tableName = "summer_stock";
             }
+            console.log(tableName);
+            deleteItem.addEventListener('click', async function () {
+                const confirmation = window.confirm("Are you sure you want to clear records for this item?");
+                if (confirmation) {
+                    await eel.deleteItem(tableName, productDesc)();
+                    location.reload();
+                }
+            })
 
             entriesCount.innerHTML = `<span class='text-primary'>[${records.length}]</span> Showing results for <span class='text-primary'>${itemName.innerHTML}</span>`;
 
@@ -423,6 +447,7 @@ if (searchPhone && searchBox) {
                     <td>${record[0]}</td>
                     <td>${record[1]}</td>
                     <td><a href="#" class="invoice">${record[2]}</a></td>
+                    <td><button class = "delete" data-id = "${record[3]}" data-table = "client_history" onclick="deleteFunc(this, ${record[3]}, 'client_history', 'client_id')"><i class="fa-solid fa-trash"></i></button></td>
                 `;
                 tableBody.appendChild(row);
             });
@@ -452,6 +477,13 @@ if (searchPhone && searchBox) {
             balance_records.forEach(record => {
 
                 const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${record[0]}</td>
+                    <td>${record[1]}</td>
+                    <td>${record[2]}</td>
+                    <td>${record[3]}</td>
+                    <td>${record[4]}</td>
+                `;
                 if (isFirstRow && searchBox.value !== "remaining") {
                     if (record[4] < 0) {
                         row.classList.add('table-danger');
@@ -459,17 +491,11 @@ if (searchPhone && searchBox) {
                     else {
                         row.classList.add('table-success');
                     }
+                    row.innerHTML += `<td style="background: none;"><button class = "delete" data-id = "${record[5]}" data-table = "client_history" onclick="deleteFunc(this, ${record[5]}, 'balance_table', 'balance_id')"><i class="fa-solid fa-trash"></i></button></td>`;
                     row.classList.add('text-light');
                     isFirstRow = false;
                 }
-                row.innerHTML = `
-                    <td>${record[0]}</td>
-                    <td>${record[1]}</td>
-                    <td>${record[2]}</td>
-                    <td>${record[3]}</td>
-                    <td>${record[4]}</td>
-
-                `;
+                
                 balanceTableBody.appendChild(row);
             });
         }

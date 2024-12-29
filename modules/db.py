@@ -36,11 +36,19 @@ class Database:
                 return []
             
             return results
+        
         except sqlite3.Error as e:
             print(f"Error fetching data: {e}")
             return []
 
-
+    def delete_data(self, table_name, delete_query, data):
+        """Delete data from a table based on the given query."""
+        try:
+            self.cursor.execute(delete_query, data)
+            self.connection.commit()
+            print(f"Data deleted from {table_name} successfully.")
+        except sqlite3.Error as e:
+            print(f"Error deleting data: {e}")
 
     def close(self):
         """Close the database connection."""
