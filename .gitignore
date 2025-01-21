@@ -3,3 +3,4 @@ invoice/*
 __pycache__
 */__pycache__
 database/db.db
+.vscode/
